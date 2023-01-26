@@ -128,6 +128,7 @@
 #define BME280_HUMIDITY_CALIB_DATA_ADDR           UINT8_C(0xE1)
 #define BME280_PWR_CTRL_ADDR                      UINT8_C(0xF4)
 #define BME280_CTRL_HUM_ADDR                      UINT8_C(0xF2)
+#define BME280_STATUS_ADDR                        UINT8_C(0xF3)
 #define BME280_CTRL_MEAS_ADDR                     UINT8_C(0xF4)
 #define BME280_CONFIG_ADDR                        UINT8_C(0xF5)
 #define BME280_DATA_ADDR                          UINT8_C(0xF7)
@@ -188,6 +189,12 @@
 
 #define BME280_STANDBY_MSK                        UINT8_C(0xE0)
 #define BME280_STANDBY_POS                        UINT8_C(0x05)
+
+#define BME280_MEASURING_MSK                      UINT8_C(0x08)
+#define BME280_MEASURING_POS                      UINT8_C(0x03)
+
+#define BME280_IM_UPDATE_MSK                      UINT8_C(0x01)
+#define BME280_IM_UPDATE_POS                      UINT8_C(0x00)
 
 /**\name Sensor component selection macros
  * These values are internal for API implementation. Don't relate this to
@@ -432,6 +439,18 @@ struct bme280_settings
 };
 
 /*!
+ * @brief bme280 status
+ */
+struct bme280_status
+{
+    /*< a conversion is running */
+    uint8_t measuring;
+
+    /*< the NVM data are being copied to image registers */
+    uint8_t im_update;
+};
+
+/*!
  * @brief bme280 device structure
  */
 struct bme280_dev
@@ -462,6 +481,9 @@ struct bme280_dev
 
     /*< Sensor settings */
     struct bme280_settings settings;
+
+    /*< Sensor status */
+    struct bme280_status status;
 
     /*< Variable to store result of read/write function */
     BME280_INTF_RET_TYPE intf_rslt;

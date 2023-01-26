@@ -379,6 +379,17 @@ static void fill_standby_settings(uint8_t *reg_data, const struct bme280_setting
 static void parse_device_settings(const uint8_t *reg_data, struct bme280_settings *settings);
 
 /*!
+ * @brief This internal API parse the measuring and im_update status and
+ * store in the device structure.
+ *
+ * @param[in] status : Pointer variable which contains the status to
+ * be get in the sensor.
+ * @param[in] reg_data : Register data to be parsed.
+ *
+ */
+static void parse_device_status(const uint8_t *reg_data, struct bme280_status *status);
+
+/*!
  * @brief This internal API reloads the already existing device settings in the
  * sensor after soft reset.
  *
@@ -624,6 +635,7 @@ int8_t bme280_get_sensor_settings(struct bme280_dev *dev)
         if (rslt == BME280_OK)
         {
             parse_device_settings(reg_data, &dev->settings);
+            parse_device_status(reg_data, &dev->status);
         }
     }
 
@@ -1066,6 +1078,16 @@ static void parse_device_settings(const uint8_t *reg_data, struct bme280_setting
     settings->osr_t = BME280_GET_BITS(reg_data[2], BME280_CTRL_TEMP);
     settings->filter = BME280_GET_BITS(reg_data[3], BME280_FILTER);
     settings->standby_time = BME280_GET_BITS(reg_data[3], BME280_STANDBY);
+}
+
+/*!
+ * @brief This internal API parse the measuring and im_update status and
+ * store in the device structure.
+ */
+static void parse_device_status(const uint8_t *reg_data, struct bme280_status *status)
+{
+    status->measuring = BME280_GET_BITS(reg_data[1], BME280_MEASURING);
+    status->im_update = BME280_GET_BITS_POS_0(reg_data[1], BME280_IM_UPDATE);
 }
 
 /*!
